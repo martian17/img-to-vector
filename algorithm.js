@@ -93,9 +93,56 @@ var calculateGradientMagnitude = function(data,width,height){//applying the kern
     }
 };
 
-var nonMaxSuppression = function(data,width,height){
+var gradientAndSuppression = function(data,width,height){//applying the kernel and calculatig the magnitude
+    var xkernel = [
+        -1,0,1,
+        -2,0,2,
+        -1,0,1
+    ];
     
-}
+    var ykernel = [
+        -1,-2,-1,
+        0,0,0,
+        1,2,1
+    ];
+    var n = 3;
+    var k = 1;
+    var data0 = new Uint8ClampedArray(data.length);
+    data0.set(data);
+    for(var y = 0; y < height; y++){
+        for(var x = 0; x < width; x++){
+            var xkernelSum = 0;
+            var ykernelSum = 0;
+            var xsum = 0;
+            var ysum = 0;
+            for(var i = 0; i < n; i++){
+                for(var j = 0; j < n; j++){
+                    var x1 = (x+i-k);
+                    var y1 = (y+j-k);
+                    if(x1 < 0 || y1 < 0 || x1 >= width || y1 >= height){
+                        continue;//kernel out of range
+                    }
+                    var idx1 = (y1*width+x1);
+                    var xkval = xkernel[i*n+j];
+                    var ykval = ykernel[i*n+j];
+                    xkernelSum += xkval;
+                    ykernelSum += ykval;
+                    xsum += xkval*data0[idx1];
+                    ysum += ykval*data0[idx1];
+                }
+            }
+            var idx = (y*width+x);
+            var xmagn = xsum/(4*1.41421356);
+            var ymagn = ysum/(4*1.41421356);
+            if(x === 300 && y === 300){
+                console.log(xmagn,ymagn,xkernelSum);
+            }
+            var magn = Math.sqrt(xmagn*xmagn+ymagn*ymagn);
+            data[idx] = Math.floor(magn);
+        }
+    }
+};
+
 
 var applyKernelRGBA = function(imgdata,kernel,k){
     var data = imgdata.data;
