@@ -36,23 +36,27 @@ finput.addEventListener("input",async function(){
     canvas.height = height;
     var ctx = canvas.getContext("2d");
     ctx.putImageData(imgdata,0,0);
-    await pause(200);
+    await pause(500);
     
     //converting to gray scale
     var gray = toGrayscale(imgdata);
     console.log(gray);
     drawGrayscale(ctx,gray,imgdata);
-    await pause(200);
+    await pause(500);
     
     //applying gaussian blur
     var gkernel = generateGaussianKernel(2);
     applyKernel(gray,width,height,gkernel,2);
     drawGrayscale(ctx,gray,imgdata);
-    await pause(200);    
+    await pause(500);    
     
     //gradient calculation y applying kernel
-    calculateGradientMagnitude(gray,width,height);
+    gradientAndAngle(gray,width,height);
     drawGrayscale(ctx,gray,imgdata);
+    //calculateGradientMagnitude(gray,width,height);
+    //ctx.putImageData(imgdata,0,0);
+    
+    //gradientAngleDisplay(gray,width,height,imgdata.data);
     //ctx.putImageData(imgdata,0,0);
     
     console.log(imgdata);
